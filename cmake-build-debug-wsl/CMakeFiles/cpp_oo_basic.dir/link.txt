@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/cpp_oo_basic.dir/0912/main.cpp.o CMakeFiles/cpp_oo_basic.dir/0912/Person.cpp.o -o cpp_oo_basic 
