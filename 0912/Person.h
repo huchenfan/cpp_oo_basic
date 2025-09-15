@@ -1,17 +1,22 @@
-#pragma once
 #include <iostream>
 #include <string>
+#include <stdexcept>      // 2025-09-14 异常
 
 class Person {
 public:
-    Person(const std::string& name, int age);   // 构造函数
-    ~Person();                             // 析构函数
-    void show() const;                        // 显示信息
-    std::string getName() const;                  // 获取姓名
-    int getAge() const;                       // 获取年龄
-    void setName(const std::string& name);       // 设置姓名
-    void setAge(int age);                      // 设置年龄
+    Person(const std::string& name, int age);
+    ~Person();
+    void show() const;
+
+    // 2025-09-14 新增：深拷贝 + 异常 + getter/setter
+    Person(const Person& other);                    // 拷贝构造
+    Person& operator=(const Person& other);         // 赋值运算符
+    void setAge(int age);                           // 带异常
+    void setName(const std::string& name);
+    int  getAge() const;
+    std::string getName() const;
 private:
     std::string m_name;
     int m_age;
 };
+
