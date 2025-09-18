@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <chrono>
+#include <unordered_map>
 
 class Person {
 public:
@@ -10,30 +12,35 @@ public:
     ~Person();
     void show() const;
 
-    // 2025-09-14 深拷贝
+    // 深拷贝
     Person(const Person& other);
     Person& operator=(const Person& other);
 
-    // 2025-09-14 异常+getter/setter
+    // 异常+getter/setter
     void setAge(int age);
     void setName(const std::string& name);
     int  getAge() const;
     std::string getName() const;
 
-    // 2025-09-16 模板函数 + 文件IO
-    template<typename T>
-    void writeToFile(const std::string& fname, const T& data) const;  // 模板函数
-    void saveToFile(const std::string& fname) const;                // 保存对象
-    static Person loadFromFile(const std::string& fname);           // 静态工厂
+    // 文件IO
+    void saveToFile(const std::string& fname) const;
+    static Person loadFromFile(const std::string& fname);
+
+    // 2025-09-18 性能计时 + 缓存
+    template<typename Func>
+    static double measure(Func&& f);                      // 毫秒计时
+    static void dumpCache();                              // 打印缓存
 private:
     std::string m_name;
     int m_age;
+    static std::unordered_map<std::string, int> s_cache;  // 简单缓存
 };
 
-/* ========== 模板实现必须放头文件 ========== */
-template<typename T>
-void Person::writeToFile(const std::string& fname, const T& data) const {
-    std::ofstream ofs(fname, std::ios::app);
-    if (!ofs) throw std::runtime_error("Cannot open file");
-    ofs << data << '\n';
+/* ========== 模板实现放头文件（性能计时） ========== */
+template<typename Func>
+double Person::measure(Func&& f) {
+    auto t0 = std::chrono::high_resolution_clock::now();
+    f();
+    auto t1 = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double, std::milli>(t1 - t0).count();
 }
